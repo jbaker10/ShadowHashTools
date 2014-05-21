@@ -6,9 +6,10 @@ _Description: ShadowHashTools: Generate, Manipulate and Embed ShadowHash Data_
 First Extract a hash to use 
 
 1. `./EXTRACT_USER_HASH.py -p password`
-
+_or_
 2. `./EXTRACT_USER_HASH.py -p ~/Desktop/passwordList.txt`
 
+Durring the extract proccess the NT and CRAM-MD5 hashes are removed. These types os hashes are considered unsecure. If the desired user is sharing files using SMB you will have to re-enter the user's password in the Sharing Menu to re-enable the NT hashes. 
 ### Integration Tests
 
 1. _Run other local services / provide credentials for external services._
