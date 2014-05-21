@@ -4,7 +4,9 @@ _Description: ShadowHashTools: Generate, Manipulate and Embed ShadowHash Data_
 
 ### Running the executables
 First Extract a hash to use 
+
 1. `./EXTRACT_USER_HASH.py -p password`
+
 2. `./EXTRACT_USER_HASH.py -p ~/Desktop/passwordList.txt`
 
 ### Integration Tests
