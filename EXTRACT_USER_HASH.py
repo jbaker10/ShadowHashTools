@@ -41,11 +41,6 @@ def main(argv):
 	## Run only as root ##
 	if not os.geteuid()==0:
 		sys.exit("\nOnly root can run this script\n")
-	
-	def usage():
-		print __doc__
-		sys.exit()
-
 
 ##############<Main Method>##############
 
