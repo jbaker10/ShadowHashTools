@@ -14,44 +14,69 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys, os, getopt
+"""\nUsage: EXTRACT_USER_HASH [OPTION ...]
+Extracts a hash from a passed in password or text file with multiple passwords.
+
+Options:
+-h        Display this message
+-i        Interactive mode, which will prompt for a password securely
+-p        Allows you to pass in a password or a password text file
+
+Example:
+EXTRACT_USER_HASH.py -p <password>
+EXTRACT_USER_HASH.py -p /path/to/password/file.txt
+"""
+
+import sys, os, getopt, getpass
 import subprocess
 from Foundation import NSPropertyListSerialization
 from Foundation import NSPropertyListXMLFormat_v1_0
 from Foundation import NSPropertyListBinaryFormat_v1_0
 
+def usage():
+	print __doc__
+	sys.exit()
+
 def main(argv):
-	
 	## Run only as root ##
 	if not os.geteuid()==0:
 		sys.exit("\nOnly root can run this script\n")
 
+##############<Main Method>##############
+
 	## Define main variables ##
 	passwordList = ''
-	
+
+	def getPassword():
+		password_init = getpass.getpass("Enter the password and the hash will be generated for you: ")
+		password_confirm = getpass.getpass("Please enter the password again for confirmation (if this prompt repeats, passwords don't match): ")
+		if password_confirm != password_init:
+			getPassword()
+		else:
+			passwordList = password_confirm
+
 	## Help and Syntax ##
 	try:
-		opts, args = getopt.getopt(argv,"hl:p:")
+		opts, args = getopt.getopt(argv,"hip:")
 		if len(opts) == 0:
-			print 'Usage: -p <Password List File or Password>'
+			usage()
 			sys.exit(2)
 	except getopt.GetoptError:
-		print 'Usage: -p <Password List File or Password>'
+		usage()
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-			print 'Usage: -p <Password List File or Password>'
-			sys.exit()
+			usage()
+		elif opt in "-i":
+			getPassword()
 		elif opt in ("-p"):
 			passwordList = arg
-
-##############<Main Method>##############
 	
 	## Create a dummy user to generate hashes ## 
 	bashCommand(['/usr/bin/dscl', '.', 'create', '/Users/pephashgen'])
 	
 	try:
-		list = open(passwordList).replace("\n", "")
+		list = open(passwordList)
 	except:
 		list = [passwordList]
 	
@@ -62,6 +87,7 @@ def main(argv):
 		
 		## Extract the HASH representation of the ShadowHashData ## 
 		ShadowHashPlist = ShadowData('pephashgen')
+		print ""
 		print ShadowHashPlist
 	
 	bashCommand(['/usr/bin/dscl', '.', 'delete', '/Users/pephashgen'])
@@ -104,4 +130,4 @@ def ShadowData(user):
 	
 	
 if __name__ == "__main__":
-    main(sys.argv[1:])
+	main(sys.argv[1:])
